@@ -1,12 +1,10 @@
-package com.example.temubarang.ui.ditemukan
+package com.example.temu.ui.screens.temuan
 
 import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -14,7 +12,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -23,7 +20,10 @@ import coil.compose.AsyncImage
 import com.example.temubarang.data.model.*
 import java.time.LocalDate
 import java.util.UUID
-import kotlinx.coroutines.CancellationException
+import com.example.temu.viewmodel.TemuanViewModel
+import com.example.temu.viewmodel.Halaman
+
+
 
 @Composable
 fun TemuanApp(vm: TemuanViewModel = viewModel()) {

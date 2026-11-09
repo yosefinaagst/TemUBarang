@@ -1,4 +1,5 @@
-package com.example.temubarang.ui.ditemukan
+package com.example.temu.ui.screens.temuan
+
 
 import android.net.Uri
 import androidx.activity.compose.BackHandler
@@ -36,6 +37,8 @@ import com.example.temubarang.data.model.kategoriBarang
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.UUID
+import com.example.temu.viewmodel.TemuanViewModel
+import com.example.temu.viewmodel.Halaman
 
 private val formBg = Color(0xFFFCF8F7)
 private val rose = Color(0xFF89465F)

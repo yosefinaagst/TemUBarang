@@ -1,4 +1,4 @@
-package com.example.temubarang.ui.ditemukan
+package com.example.temu.ui.screens.temuan
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -24,6 +24,8 @@ import com.example.temu.R
 import com.example.temubarang.data.model.Temuan
 import com.example.temubarang.data.model.kategoriBarang
 import kotlinx.coroutines.CancellationException
+import com.example.temu.viewmodel.TemuanViewModel
+import com.example.temu.viewmodel.Halaman
 
 private val paper = Color(0xFFFCF8F7)
 private val berry = Color(0xFF89465F)
