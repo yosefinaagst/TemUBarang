@@ -1,6 +1,7 @@
 
 package com.example.temu.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -145,7 +146,15 @@ class AuthViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
+
+                Log.e(
+                    "TEMUBARANG_AUTH",
+                    "Register gagal",
+                    e
+                )
+
                 pesan = pesanError(e)
+
             } finally {
                 sibuk = false
             }
