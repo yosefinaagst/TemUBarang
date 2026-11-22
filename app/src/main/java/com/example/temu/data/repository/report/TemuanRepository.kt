@@ -1,7 +1,7 @@
 package com.example.temu.data.repository.report
 
 import com.example.temu.data.remote.TemuanRemoteDataSource
-import com.example.temubarang.data.model.FormTemuan
+import com.example.temu.data.model.FormTemuan
 
 class TemuanRepository(
     private val remote: TemuanRemoteDataSource = TemuanRemoteDataSource()
@@ -19,4 +19,21 @@ class TemuanRepository(
     ) {
         remote.simpan(data, foto, mime)
     }
+
+    suspend fun idPengguna(): String {
+        return remote.idPengguna()
+    }
+
+    suspend fun perbarui(
+        data: FormTemuan,
+        foto: ByteArray? = null,
+        mime: String? = null
+    ) {
+        remote.perbarui(data, foto, mime)
+    }
+
+    suspend fun hapus(id: String) {
+        remote.hapus(id)
+    }
+
 }

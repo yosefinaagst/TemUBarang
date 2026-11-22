@@ -8,10 +8,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.temu.data.repository.auth.AuthRepository
+import com.example.temu.data.model.FormTemuan
+import com.example.temu.data.model.Temuan
 import com.example.temu.data.repository.report.TemuanRepository
-import com.example.temubarang.data.model.FormTemuan
-import com.example.temubarang.data.model.Temuan
 import java.io.ByteArrayOutputStream
 import java.time.LocalDate
 import java.time.ZoneId
@@ -21,124 +20,48 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-// Sementara dipertahankan untuk kompatibilitas dengan UI lama.
-enum class Halaman {
-    MEMUAT,
-    MASUK,
-    HOME,
-    FORM
-}
-
 class TemuanViewModel(
     app: Application
 ) : AndroidViewModel(app) {
 
-    // Repository autentikasi
-    private val authRepo = AuthRepository()
+    private val repository = TemuanRepository()
 
-    // Repository laporan barang ditemukan
-    private val repo = TemuanRepository()
-
-    // State halaman (akan dihapus setelah migrasi Navigation selesai)
-    var halaman by mutableStateOf(Halaman.MEMUAT)
-        private set
-
-    // Daftar laporan barang ditemukan
     var daftar by mutableStateOf<List<Temuan>>(emptyList())
         private set
 
-    // Status proses loading atau penyimpanan
+    var penggunaId by mutableStateOf<String?>(null)
+        private set
+
     var sibuk by mutableStateOf(false)
         private set
 
-    // Pesan informasi atau error
     var pesan by mutableStateOf("")
         private set
 
-    init {
-        periksaSesi()
-    }
+    var simpanBerhasil by mutableStateOf(false)
+        private set
 
-    // Menjalankan proses asynchronous dengan penanganan error terpusat
-    private fun proses(aksi: suspend () -> Unit) {
-        if (sibuk) return
+    var perbaruiBerhasil by mutableStateOf(false)
+        private set
 
-        sibuk = true
-        pesan = ""
+    var hapusBerhasil by mutableStateOf(false)
+        private set
 
-        viewModelScope.launch {
-            try {
-                aksi()
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                pesan = e.localizedMessage
-                    ?: "Terjadi kesalahan. Coba lagi."
-            } finally {
-                sibuk = false
-            }
+    // Memuat laporan dan identitas pengguna
+    fun muat() {
+        proses {
+            penggunaId = repository.idPengguna()
+            daftar = repository.daftar()
         }
     }
 
-    // Memeriksa apakah pengguna sudah memiliki sesi login
-    fun periksaSesi() = proses {
-        if (authRepo.sudahMasuk()) {
-            halaman = Halaman.HOME
-            daftar = repo.daftar()
-        } else {
-            halaman = Halaman.MASUK
-        }
-    }
-
-    // Login menggunakan Supabase Auth
-    fun masuk(email: String, sandi: String) = proses {
-        require(email.isNotBlank()) {
-            "Email harus diisi."
-        }
-
-        require(sandi.isNotBlank()) {
-            "Kata sandi harus diisi."
-        }
-
-        authRepo.masuk(email, sandi)
-
-        halaman = Halaman.HOME
-        daftar = repo.daftar()
-    }
-
-    // Memuat ulang daftar laporan
-    fun muat() = proses {
-        daftar = repo.daftar()
-    }
-
-    // Membuat signed URL untuk foto laporan
+    // Mendapatkan signed URL foto
     suspend fun urlFoto(path: String): String {
-        return repo.fotoUrl(path)
+        return repository.fotoUrl(path)
     }
 
-    // Membuka halaman form (sementara untuk UI lama)
-    fun bukaForm() {
-        if (!sibuk) {
-            pesan = ""
-            halaman = Halaman.FORM
-        }
-    }
-
-    // Kembali ke halaman Home (sementara untuk UI lama)
-    fun kembali() {
-        if (!sibuk) {
-            pesan = ""
-            halaman = Halaman.HOME
-        }
-    }
-
-    // Menyimpan laporan barang ditemukan beserta fotonya
-    fun simpan(
-        data: FormTemuan,
-        uri: Uri?
-    ) = proses {
-
-        // Validasi data wajib
+    // Validasi input umum
+    private fun validasiData(data: FormTemuan) {
         require(data.nama.isNotBlank()) {
             "Nama barang harus diisi."
         }
@@ -151,49 +74,47 @@ class TemuanViewModel(
             "Deskripsi harus diisi."
         }
 
-        // Validasi format tanggal
-        val tanggal = try {
-            LocalDate.parse(data.tanggal)
+        try {
+            val tanggal = LocalDate.parse(data.tanggal)
+
+            require(
+                !tanggal.isAfter(
+                    LocalDate.now(ZoneId.of("Asia/Jakarta"))
+                )
+            ) {
+                "Tanggal tidak boleh di masa depan."
+            }
         } catch (e: DateTimeParseException) {
-            error("Gunakan tanggal YYYY-MM-DD.")
-        }
-
-        // Tanggal tidak boleh melebihi hari ini
-        require(
-            !tanggal.isAfter(
-                LocalDate.now(ZoneId.of("Asia/Jakarta"))
+            throw IllegalArgumentException(
+                "Gunakan format tanggal YYYY-MM-DD."
             )
-        ) {
-            "Tanggal tidak boleh di masa depan."
         }
+    }
 
-        // Foto wajib dipilih
-        val fotoUri = requireNotNull(uri) {
-            "Pilih satu foto barang."
-        }
-
+    // Membaca dan memvalidasi foto maksimal 5 MB
+    private suspend fun bacaFoto(uri: Uri): Pair<ByteArray, String> {
         val resolver = getApplication<Application>().contentResolver
 
-        // Validasi MIME type
-        val mime = resolver.getType(fotoUri)
-
-        require(mime == "image/png" || mime == "image/jpeg") {
-            "Pilih foto JPG atau PNG."
+        val mime = requireNotNull(resolver.getType(uri)) {
+            "Jenis file foto tidak dapat dikenali."
         }
 
-        // Membaca foto dan membatasi ukuran maksimal 5 MB
-        val bytes = withContext(Dispatchers.IO) {
+        require(
+            mime == "image/jpeg" || mime == "image/png"
+        ) {
+            "Foto harus berformat JPG atau PNG."
+        }
 
+        val bytes = withContext(Dispatchers.IO) {
             val batasUkuran = 5 * 1024 * 1024
 
             val input = requireNotNull(
-                resolver.openInputStream(fotoUri)
+                resolver.openInputStream(uri)
             ) {
-                "Foto tidak bisa dibuka."
+                "Foto tidak dapat dibuka."
             }
 
             input.use { stream ->
-
                 val output = ByteArrayOutputStream()
                 val buffer = ByteArray(8192)
 
@@ -219,24 +140,135 @@ class TemuanViewModel(
             }
         }
 
-        // Upload foto dan simpan laporan melalui Repository
-        repo.simpan(
-            data = data,
-            foto = bytes,
-            mime = mime
-        )
+        return bytes to mime
+    }
 
-        // Kembali ke Home setelah penyimpanan berhasil
-        halaman = Halaman.HOME
+    // Membuat laporan baru
+    fun simpan(data: FormTemuan, uri: Uri?) {
+        if (sibuk) return
 
-        // Muat ulang daftar laporan
-        try {
-            daftar = repo.daftar()
+        simpanBerhasil = false
+
+        proses {
+            validasiData(data)
+
+            val fotoUri = requireNotNull(uri) {
+                "Pilih foto barang terlebih dahulu."
+            }
+
+            val (bytes, mime) = bacaFoto(fotoUri)
+
+            repository.simpan(
+                data = data,
+                foto = bytes,
+                mime = mime
+            )
+
+            daftar = repository.daftar()
+            simpanBerhasil = true
             pesan = "Laporan berhasil disimpan."
-        } catch (e: CancellationException) {
-            throw e
-        } catch (_: Exception) {
-            pesan = "Laporan tersimpan. Tekan Muat ulang untuk melihatnya."
+        }
+    }
+
+    // Memperbarui laporan
+    // Foto boleh null jika pengguna mempertahankan foto lama
+    fun perbarui(data: FormTemuan, uri: Uri?) {
+        if (sibuk) return
+
+        perbaruiBerhasil = false
+
+        proses {
+            validasiData(data)
+
+            val fotoBaru = uri?.let { bacaFoto(it) }
+
+            repository.perbarui(
+                data = data,
+                foto = fotoBaru?.first,
+                mime = fotoBaru?.second
+            )
+
+            daftar = repository.daftar()
+            perbaruiBerhasil = true
+            pesan = "Laporan berhasil diperbarui."
+        }
+    }
+
+    // Menghapus laporan secara soft delete
+
+    fun hapus(id: String) {
+        if (sibuk) return
+
+        hapusBerhasil = false
+
+        proses {
+            // Lakukan soft delete di Supabase
+            repository.hapus(id)
+
+            // Ambil ulang data dari server
+            daftar = repository.daftar()
+
+            // Pastikan laporan tidak lagi muncul
+            require(daftar.none { it.id == id }) {
+                "Laporan masih ditemukan setelah proses penghapusan."
+            }
+
+            hapusBerhasil = true
+            pesan = "Laporan berhasil dihapus."
+        }
+    }
+
+
+    fun resetStatus() {
+        pesan = ""
+        simpanBerhasil = false
+        perbaruiBerhasil = false
+        hapusBerhasil = false
+    }
+
+    private fun proses(aksi: suspend () -> Unit) {
+        if (sibuk) return
+
+        viewModelScope.launch {
+            sibuk = true
+            pesan = ""
+
+            try {
+                aksi()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                pesan = pesanUntukPengguna(e)
+            } finally {
+                sibuk = false
+            }
+        }
+    }
+    private fun pesanUntukPengguna(e: Exception): String {
+        // Pesan validasi lokal tetap ditampilkan
+        if (e is IllegalArgumentException) {
+            return e.message ?: "Data yang dimasukkan tidak valid."
+        }
+
+        val detail = e.message.orEmpty().lowercase()
+
+        return when {
+            "permission denied" in detail ||
+                    "42501" in detail -> {
+                "Akun tidak memiliki izin untuk mengubah laporan."
+            }
+
+            "not found" in detail -> {
+                "Laporan tidak ditemukan atau sudah dihapus."
+            }
+
+            "timeout" in detail -> {
+                "Koneksi terlalu lama. Silakan coba lagi."
+            }
+
+            else -> {
+                "Terjadi kesalahan saat memproses laporan. Silakan coba lagi."
+            }
         }
     }
 }

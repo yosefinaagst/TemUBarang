@@ -9,8 +9,11 @@ object Screen {
     const val HOME = "home"
     const val FORM_TEMUAN = "form_temuan"
     const val DETAIL_TEMUAN = "detail_temuan/{id}"
+    const val EDIT_TEMUAN = "edit_temuan/{id}"
 
-    fun detailTemuan(id: String): String {
-        return "detail_temuan/$id"
-    }
+    fun detailTemuan(id: String) =
+        "detail_temuan/$id"
+
+    fun editTemuan(id: String) =
+        "edit_temuan/$id"
 }
