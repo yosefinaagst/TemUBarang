@@ -1,4 +1,5 @@
-package com.example.temubarang.data.model
+
+package com.example.temu.data.model
 
 data class Temuan(
     val id: String,
@@ -8,7 +9,8 @@ data class Temuan(
     val foto: String,
     val deskripsi: String,
     val status: String,
-    val kategori: String
+    val kategori: String,
+    val ownerId: String = ""
 )
 
 data class FormTemuan(
@@ -21,8 +23,12 @@ data class FormTemuan(
 )
 
 val kategoriBarang = mapOf(
-    "electronics" to "Elektronik", "wallet_bag" to "Dompet dan Tas",
-    "keys" to "Kunci", "cards_documents" to "Kartu dan Dokumen",
-    "accessories" to "Aksesori", "books_stationery" to "Buku dan Alat Tulis",
-    "personal_items" to "Perlengkapan Pribadi", "other" to "Lainnya"
+    "electronics" to "Elektronik",
+    "wallet_bag" to "Dompet dan Tas",
+    "keys" to "Kunci",
+    "cards_documents" to "Kartu dan Dokumen",
+    "accessories" to "Aksesori",
+    "books_stationery" to "Buku dan Alat Tulis",
+    "personal_items" to "Perlengkapan Pribadi",
+    "other" to "Lainnya"
 )
