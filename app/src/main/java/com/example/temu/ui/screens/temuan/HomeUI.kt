@@ -4,6 +4,7 @@ package com.example.temu.ui.screens.temuan
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -65,7 +66,8 @@ fun HomeScreen(
     onRefresh: () -> Unit,
     onAddClick: () -> Unit,
     onItemClick: (Temuan) -> Unit,
-    getPhotoUrl: suspend (String) -> String
+    getPhotoUrl: suspend (String) -> String,
+    onHilangClick: () -> Unit = {}
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     var category by rememberSaveable { mutableStateOf("") }
@@ -199,6 +201,8 @@ fun HomeScreen(
                                     Box(
                                         modifier = Modifier
                                             .weight(1f)
+                                            // F1: tab Hilang membuka Jelajah · Hilang
+                                            .clickable(enabled = index == 0, onClick = onHilangClick)
                                             .background(
                                                 if (index == 1) Color.White else blush,
                                                 rounded

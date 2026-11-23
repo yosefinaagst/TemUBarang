@@ -9,7 +9,8 @@ import com.example.temu.viewmodel.TemuanViewModel
 fun HomeRoute(
     viewModel: TemuanViewModel,
     onAddClick: () -> Unit,
-    onDetailClick: (String) -> Unit
+    onDetailClick: (String) -> Unit,
+    onHilangClick: () -> Unit = {}
 ) {
     LaunchedEffect(Unit) {
         if (
@@ -37,6 +38,8 @@ fun HomeRoute(
 
         getPhotoUrl = { path ->
             viewModel.urlFoto(path)
-        }
+        },
+
+        onHilangClick = onHilangClick
     )
 }
