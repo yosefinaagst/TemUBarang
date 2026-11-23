@@ -29,6 +29,9 @@ import com.example.temu.ui.screens.temuan.DetailTemuanRoute
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.example.temu.ui.screens.temuan.DetailTemuanRoute
+import com.example.temu.ui.screens.hilang.RuteHilang
+import com.example.temu.ui.screens.hilang.laporanHilangGraph
+
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
@@ -142,9 +145,24 @@ fun AppNavigation() {
                     navController.navigate(
                         Screen.detailTemuan(id)
                     )
+                },
+
+                // F1: pindah ke tab Hilang
+                onHilangClick = {
+                    navController.navigate(RuteHilang.JELAJAH) {
+                        popUpTo(Screen.HOME) { inclusive = true }
+                        launchSingleTop = true
+                    }
                 }
             )
         }
+
+        // F1 LAPORAN BARANG HILANG (Jelajah · Hilang, detail, tambah, edit)
+        // ViewModel tiap layar F1 dibuat di dalam laporanHilangGraph (1 layar = 1 ViewModel)
+        laporanHilangGraph(
+            navController = navController,
+            ruteDitemukan = Screen.HOME
+        )
 
         // FORM LAPORAN TEMUAN
         composable(Screen.FORM_TEMUAN) {
