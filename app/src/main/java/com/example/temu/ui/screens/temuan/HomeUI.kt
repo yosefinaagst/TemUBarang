@@ -1,4 +1,3 @@
-
 package com.example.temu.ui.screens.temuan
 
 import androidx.compose.foundation.BorderStroke
@@ -33,6 +32,9 @@ import coil.compose.AsyncImage
 import com.example.temu.R
 import com.example.temu.data.model.Temuan
 import com.example.temu.data.model.kategoriBarang
+import com.example.temu.ui.screens.components.NavigasiBawah
+import com.example.temu.ui.screens.components.TAB_JELAJAH
+import com.example.temu.ui.screens.components.TAB_KLAIM_SAYA
 import kotlinx.coroutines.CancellationException
 
 private val paper = Color(0xFFFCF8F7)
@@ -67,7 +69,8 @@ fun HomeScreen(
     onAddClick: () -> Unit,
     onItemClick: (Temuan) -> Unit,
     getPhotoUrl: suspend (String) -> String,
-    onHilangClick: () -> Unit = {}
+    onHilangClick: () -> Unit = {},
+    onKlaimSayaClick: () -> Unit = {}
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     var category by rememberSaveable { mutableStateOf("") }
@@ -301,45 +304,13 @@ fun HomeScreen(
             }
 
             // Navigasi bawah sementara; fitur lain belum diaktifkan
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.White)
-                    .padding(vertical = 8.dp)
-            ) {
-                listOf(
-                    R.drawable.home_jelajah to "Jelajah",
-                    R.drawable.home_klaim to "Klaim Saya",
-                    R.drawable.home_tersimpan to "Tersimpan",
-                    R.drawable.home_status to "Status Saya",
-                    R.drawable.home_profil to "Profil"
-                ).forEachIndexed { index, (icon, label) ->
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .background(
-                                    if (index == 0) blush else Color.Transparent,
-                                    CircleShape
-                                )
-                                .padding(horizontal = 14.dp, vertical = 4.dp)
-                        ) {
-                            Glyph(
-                                icon,
-                                color = if (index == 0) berry else muted
-                            )
-                        }
-
-                        Text(
-                            label,
-                            fontSize = 10.sp,
-                            color = if (index == 0) berry else muted
-                        )
-                    }
+            NavigasiBawah(
+                terpilih = TAB_JELAJAH,
+                onPilih = { tab ->
+                    if (tab == TAB_KLAIM_SAYA) onKlaimSayaClick()
+                    // Tersimpan, Status Saya, Profil: belum ada halaman
                 }
-            }
+            )
         }
     }
 

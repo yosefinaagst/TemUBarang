@@ -17,7 +17,8 @@ fun DetailTemuanRoute(
     viewModel: TemuanViewModel,
     onBack: () -> Unit,
     onEdit: (String) -> Unit,
-    onDeleted: () -> Unit
+    onDeleted: () -> Unit,
+    onKlaim: (String) -> Unit,
 ) {
     val barang = viewModel.daftar.firstOrNull {
         it.id == id
@@ -107,6 +108,8 @@ fun DetailTemuanRoute(
                 viewModel.hapus(barang.id)
             }
         },
+
+        onKlaim = { onKlaim(barang.id) },
 
         deleting = viewModel.sibuk
     )

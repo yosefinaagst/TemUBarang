@@ -104,7 +104,7 @@ fun NavGraphBuilder.laporanHilangGraph(
             onHapus = viewModel::hapus,
             onPesanTampil = viewModel::pesanSudahTampil,
             onUbahStatus = onUbahStatus?.let { buka -> { buka(id) } },
-            onSimpanLaporan = onSimpanLaporan?.let { simpan -> { simpan(id) } }
+            onSimpanLaporan = onSimpanLaporan?.let { simpan -> { simpan(id) } },
         )
     }
 

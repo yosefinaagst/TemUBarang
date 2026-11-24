@@ -1,4 +1,3 @@
-
 package com.example.temu.ui.screens.temuan
 
 import androidx.compose.runtime.Composable
@@ -10,7 +9,8 @@ fun HomeRoute(
     viewModel: TemuanViewModel,
     onAddClick: () -> Unit,
     onDetailClick: (String) -> Unit,
-    onHilangClick: () -> Unit = {}
+    onHilangClick: () -> Unit = {},
+    onKlaimSayaClick: () -> Unit = {}
 ) {
     LaunchedEffect(Unit) {
         if (
@@ -40,6 +40,8 @@ fun HomeRoute(
             viewModel.urlFoto(path)
         },
 
-        onHilangClick = onHilangClick
+        onHilangClick = onHilangClick,
+
+        onKlaimSayaClick = onKlaimSayaClick
     )
 }
