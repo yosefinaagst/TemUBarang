@@ -38,6 +38,7 @@ fun DetailTemuanScreen(
     onBack: () -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
+    onKlaim: () -> Unit,
     deleting: Boolean = false
 ) {
     var konfirmasiHapus by remember {
@@ -227,19 +228,31 @@ fun DetailTemuanScreen(
 
         HorizontalDivider(color = detailLine)
 
-        Button(
-            onClick = onBack,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 14.dp)
-                .height(50.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = detailRose,
-                contentColor = Color.White
-            )
-        ) {
-            Text("Kembali ke Jelajah")
+        val alasanTidakBisa = when {
+            isOwner -> "Ini laporanmu sendiri, tidak bisa diklaim."
+            barang.status == "completed" -> "Barang sudah dikembalikan, tidak bisa diklaim."
+            else -> null
+        }
+
+        Column(Modifier.padding(horizontal = 20.dp, vertical = 14.dp)) {
+            if (alasanTidakBisa != null) {
+                Text(alasanTidakBisa, fontSize = 13.sp, color = detailMuted)
+                Spacer(Modifier.height(8.dp))
+            }
+            Button(
+                onClick = onKlaim,
+                enabled = alasanTidakBisa == null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = detailRose,
+                    contentColor = Color.White
+                )
+            ) {
+                Text("Klaim Ini Barang Saya")
+            }
         }
     }
 
