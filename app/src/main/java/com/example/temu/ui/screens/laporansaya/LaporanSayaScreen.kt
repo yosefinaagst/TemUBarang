@@ -45,11 +45,12 @@ import androidx.compose.ui.unit.sp
 import com.example.temu.R
 import com.example.temu.data.model.LaporanHilang
 import com.example.temu.data.model.StatusLaporan
+import com.example.temu.ui.screens.components.NavigasiBawah
+import com.example.temu.ui.screens.components.TAB_STATUS_SAYA
 import com.example.temu.ui.screens.hilang.BentukHilang
 import com.example.temu.ui.screens.hilang.FotoLaporan
 import com.example.temu.ui.screens.hilang.Glyph
 import com.example.temu.ui.screens.hilang.LabelStatus
-import com.example.temu.ui.screens.hilang.NavigasiBawahJelajah
 import com.example.temu.ui.screens.hilang.PesanKeadaan
 import com.example.temu.ui.screens.hilang.WarnaHilang
 import com.example.temu.ui.screens.hilang.tanggalPanjang
@@ -191,13 +192,10 @@ fun LaporanSayaScreen(
                 }
             }
 
-            NavigasiBawahJelajah(onPilih = onNavigasiBawah, aktif = INDEKS_NAV_LAPORAN_SAYA)
+            NavigasiBawah(terpilih = TAB_STATUS_SAYA, onPilih = onNavigasiBawah)
         }
     }
 }
-
-/** Posisi "Laporan Saya" pada navigasi bawah. */
-const val INDEKS_NAV_LAPORAN_SAYA = 3
 
 internal fun labelTab(status: String): String = when (status) {
     StatusLaporan.DALAM_PROSES -> "Dalam Proses"

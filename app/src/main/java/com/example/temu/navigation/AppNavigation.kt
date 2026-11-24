@@ -24,6 +24,7 @@ import com.example.temu.ui.screens.claim.KlaimSayaScreen
 import com.example.temu.ui.screens.components.NavigasiBawah
 import com.example.temu.ui.screens.components.TAB_JELAJAH
 import com.example.temu.ui.screens.components.TAB_KLAIM_SAYA
+import com.example.temu.ui.screens.components.TAB_STATUS_SAYA
 import com.example.temu.ui.screens.hilang.RuteHilang
 import com.example.temu.ui.screens.hilang.laporanHilangGraph
 import com.example.temu.ui.screens.laporansaya.RuteLaporanSaya
@@ -166,6 +167,14 @@ fun AppNavigation() {
                         popUpTo(Screen.HOME)
                         launchSingleTop = true
                     }
+                },
+
+                // F1 Halaman 2: pindah ke tab Status Saya (Laporan Saya)
+                onStatusSayaClick = {
+                    navController.navigate(RuteLaporanSaya.daftar()) {
+                        popUpTo(Screen.HOME)
+                        launchSingleTop = true
+                    }
                 }
             )
         }
@@ -178,12 +187,19 @@ fun AppNavigation() {
             // Laporan milik sendiri → kelola di Laporan Saya (F1 Halaman 2)
             onUbahStatus = { id -> navController.navigate(RuteLaporanSaya.detail(id)) },
             onBukaLaporanSaya = {
-                navController.navigate(RuteLaporanSaya.daftar()) { launchSingleTop = true }
+                navController.navigate(RuteLaporanSaya.daftar()) {
+                    popUpTo(Screen.HOME)
+                    launchSingleTop = true
+                }
             }
         )
 
         // F1 HALAMAN 2 · LAPORAN SAYA (daftar per status, detail + riwayat, ubah status)
-        laporanSayaGraph(navController = navController)
+        laporanSayaGraph(
+            navController = navController,
+            ruteJelajah = Screen.HOME,
+            ruteKlaimSaya = Screen.KLAIM_SAYA
+        )
 
         // FORM LAPORAN TEMUAN
         composable(Screen.FORM_TEMUAN) {
@@ -284,6 +300,12 @@ fun AppNavigation() {
                         onPilih = { tab ->
                             if (tab == TAB_JELAJAH) {
                                 navController.navigate(Screen.HOME) {
+                                    popUpTo(Screen.HOME)
+                                    launchSingleTop = true
+                                }
+                            }
+                            if (tab == TAB_STATUS_SAYA) {
+                                navController.navigate(RuteLaporanSaya.daftar()) {
                                     popUpTo(Screen.HOME)
                                     launchSingleTop = true
                                 }

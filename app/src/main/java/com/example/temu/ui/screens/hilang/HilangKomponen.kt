@@ -207,12 +207,9 @@ internal fun PesanKeadaan(
     }
 }
 
-/**
- * Navigasi bawah, sama persis dengan layar Barang Ditemukan.
- * [aktif] = indeks menu yang sedang dibuka (0 Jelajah, 3 Laporan Saya / F1 Halaman 2).
- */
+/** Navigasi bawah, sama persis dengan layar Barang Ditemukan. Jelajah aktif. */
 @Composable
-internal fun NavigasiBawahJelajah(onPilih: (Int) -> Unit = {}, aktif: Int = 0) {
+internal fun NavigasiBawahJelajah(onPilih: (Int) -> Unit = {}) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -223,7 +220,7 @@ internal fun NavigasiBawahJelajah(onPilih: (Int) -> Unit = {}, aktif: Int = 0) {
             R.drawable.home_jelajah to "Jelajah",
             R.drawable.home_klaim to "Klaim Saya",
             R.drawable.home_tersimpan to "Tersimpan",
-            R.drawable.home_status to "Laporan Saya",
+            R.drawable.home_status to "Status Saya",
             R.drawable.home_profil to "Profil"
         ).forEachIndexed { index, (ikon, label) ->
             Column(
@@ -235,17 +232,17 @@ internal fun NavigasiBawahJelajah(onPilih: (Int) -> Unit = {}, aktif: Int = 0) {
                 Box(
                     modifier = Modifier
                         .background(
-                            if (index == aktif) WarnaHilang.Blush else Color.Transparent,
+                            if (index == 0) WarnaHilang.Blush else Color.Transparent,
                             CircleShape
                         )
                         .padding(horizontal = 14.dp, vertical = 4.dp)
                 ) {
-                    Glyph(ikon, color = if (index == aktif) WarnaHilang.Rose else WarnaHilang.TeksSekunder)
+                    Glyph(ikon, color = if (index == 0) WarnaHilang.Rose else WarnaHilang.TeksSekunder)
                 }
                 Text(
                     label,
                     fontSize = 10.sp,
-                    color = if (index == aktif) WarnaHilang.Rose else WarnaHilang.TeksSekunder
+                    color = if (index == 0) WarnaHilang.Rose else WarnaHilang.TeksSekunder
                 )
             }
         }

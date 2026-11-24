@@ -9,6 +9,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.temu.ui.screens.components.TAB_JELAJAH
+import com.example.temu.ui.screens.components.TAB_KLAIM_SAYA
 import com.example.temu.ui.screens.hilang.RuteHilang
 import com.example.temu.viewmodel.laporansaya.DetailLaporanSayaViewModel
 import com.example.temu.viewmodel.laporansaya.LaporanSayaViewModel
@@ -33,10 +35,17 @@ object RuteLaporanSaya {
 }
 
 /**
- * Navigasi F1 Halaman 2. 1 layar = 1 ViewModel.
- * Dipasang di AppNavigation dengan: laporanSayaGraph(navController)
+ * Navigasi F1 Halaman 2 (tab "Status Saya" di navigasi bawah). 1 layar = 1 ViewModel.
+ * Dipasang di AppNavigation dengan: laporanSayaGraph(navController, Screen.HOME, Screen.KLAIM_SAYA)
+ *
+ * @param ruteJelajah   rute tab Jelajah (beranda Ditemukan)
+ * @param ruteKlaimSaya rute tab Klaim Saya (F2)
  */
-fun NavGraphBuilder.laporanSayaGraph(navController: NavHostController) {
+fun NavGraphBuilder.laporanSayaGraph(
+    navController: NavHostController,
+    ruteJelajah: String,
+    ruteKlaimSaya: String
+) {
 
     // ---------------- Laporan Saya (ViewPager) ----------------
     composable(
@@ -63,8 +72,14 @@ fun NavGraphBuilder.laporanSayaGraph(navController: NavHostController) {
             onMuatLagi = viewModel::muatBerikutnya,
             onPesanTampil = viewModel::pesanSudahTampil,
             onDetail = { id -> navController.navigate(RuteLaporanSaya.detail(id)) },
-            onBukaJelajah = { bukaJelajah(navController) },
-            onNavigasiBawah = { index -> if (index == 0) bukaJelajah(navController) }
+            onBukaJelajah = { bukaTab(navController, RuteHilang.JELAJAH) },
+            onNavigasiBawah = { tab ->
+                when (tab) {
+                    TAB_JELAJAH -> bukaTab(navController, ruteJelajah)
+                    TAB_KLAIM_SAYA -> bukaTab(navController, ruteKlaimSaya)
+                    // Tersimpan, Profil: belum ada halaman
+                }
+            }
         )
     }
 
@@ -142,8 +157,9 @@ private fun kembaliKeDaftar(navController: NavHostController, tab: Int?) {
     }
 }
 
-private fun bukaJelajah(navController: NavHostController) {
-    navController.navigate(RuteHilang.JELAJAH) {
+/** Pindah ke tab lain di navigasi bawah; Laporan Saya ditutup dari back stack. */
+private fun bukaTab(navController: NavHostController, rute: String) {
+    navController.navigate(rute) {
         popUpTo(RuteLaporanSaya.DAFTAR) { inclusive = true }
         launchSingleTop = true
     }

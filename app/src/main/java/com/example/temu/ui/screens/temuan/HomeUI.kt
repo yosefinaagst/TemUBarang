@@ -35,6 +35,7 @@ import com.example.temu.data.model.kategoriBarang
 import com.example.temu.ui.screens.components.NavigasiBawah
 import com.example.temu.ui.screens.components.TAB_JELAJAH
 import com.example.temu.ui.screens.components.TAB_KLAIM_SAYA
+import com.example.temu.ui.screens.components.TAB_STATUS_SAYA
 import kotlinx.coroutines.CancellationException
 
 private val paper = Color(0xFFFCF8F7)
@@ -70,7 +71,8 @@ fun HomeScreen(
     onItemClick: (Temuan) -> Unit,
     getPhotoUrl: suspend (String) -> String,
     onHilangClick: () -> Unit = {},
-    onKlaimSayaClick: () -> Unit = {}
+    onKlaimSayaClick: () -> Unit = {},
+    onStatusSayaClick: () -> Unit = {}
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     var category by rememberSaveable { mutableStateOf("") }
@@ -307,8 +309,11 @@ fun HomeScreen(
             NavigasiBawah(
                 terpilih = TAB_JELAJAH,
                 onPilih = { tab ->
-                    if (tab == TAB_KLAIM_SAYA) onKlaimSayaClick()
-                    // Tersimpan, Status Saya, Profil: belum ada halaman
+                    when (tab) {
+                        TAB_KLAIM_SAYA -> onKlaimSayaClick()
+                        TAB_STATUS_SAYA -> onStatusSayaClick() // F1 Halaman 2 · Laporan Saya
+                        // Tersimpan, Profil: belum ada halaman
+                    }
                 }
             )
         }

@@ -10,7 +10,8 @@ fun HomeRoute(
     onAddClick: () -> Unit,
     onDetailClick: (String) -> Unit,
     onHilangClick: () -> Unit = {},
-    onKlaimSayaClick: () -> Unit = {}
+    onKlaimSayaClick: () -> Unit = {},
+    onStatusSayaClick: () -> Unit = {}
 ) {
     LaunchedEffect(Unit) {
         if (
@@ -42,6 +43,8 @@ fun HomeRoute(
 
         onHilangClick = onHilangClick,
 
-        onKlaimSayaClick = onKlaimSayaClick
+        onKlaimSayaClick = onKlaimSayaClick,
+
+        onStatusSayaClick = onStatusSayaClick
     )
 }
