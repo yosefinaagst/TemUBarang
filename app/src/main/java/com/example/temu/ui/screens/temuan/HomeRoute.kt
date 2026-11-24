@@ -3,6 +3,10 @@ package com.example.temu.ui.screens.temuan
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.example.temu.viewmodel.TemuanViewModel
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.temu.viewmodel.profil.ProfilViewModel
 
 @Composable
 fun HomeRoute(
@@ -10,7 +14,10 @@ fun HomeRoute(
     onAddClick: () -> Unit,
     onDetailClick: (String) -> Unit,
     onHilangClick: () -> Unit = {},
-    onKlaimSayaClick: () -> Unit = {}
+    onKlaimSayaClick: () -> Unit = {},
+    onProfilClick: () -> Unit = {},
+
+    profilViewModel: ProfilViewModel = viewModel(),
 ) {
     LaunchedEffect(Unit) {
         if (
@@ -19,6 +26,12 @@ fun HomeRoute(
         ) {
             viewModel.muat()
         }
+    }
+
+    val profilState by profilViewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        if (!profilState.memuat) profilViewModel.muat()
     }
 
     HomeScreen(
@@ -42,6 +55,13 @@ fun HomeRoute(
 
         onHilangClick = onHilangClick,
 
-        onKlaimSayaClick = onKlaimSayaClick
+        onKlaimSayaClick = onKlaimSayaClick,
+
+        onProfilClick = onProfilClick,
+
+        fotoProfil = profilState.profil?.fotoUrl,
+
+        inisialProfil = profilState.profil?.inisial,
+
     )
 }
