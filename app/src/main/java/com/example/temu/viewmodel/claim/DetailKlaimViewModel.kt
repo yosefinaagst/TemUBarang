@@ -1,5 +1,6 @@
 package com.example.temu.ui.screens.claim
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,6 +9,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.temu.data.model.Claim
 import com.example.temu.data.remote.ClaimRemoteDataSource
 import com.example.temu.data.repository.claim.ClaimRepository
+import io.github.jan.supabase.exceptions.HttpRequestException
+import io.github.jan.supabase.exceptions.RestException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -146,9 +149,17 @@ class DetailKlaimViewModel(
     }
 
     /** Pesan dari require()/IllegalStateException kita sudah ramah; error lain disederhanakan. */
-    private fun pesanRamah(e: Exception, cadangan: String): String =
-        when (e) {
+    private fun pesanRamah(e: Exception, cadangan: String): String {
+        Log.e("DetailKlaim", cadangan, e)   // lihat detailnya di Logcat
+        return when (e) {
             is IllegalArgumentException, is IllegalStateException -> e.message ?: cadangan
+            is HttpRequestException -> "$cadangan Periksa koneksi lalu coba lagi."
+            is RestException ->
+                if (e.message?.contains("row-level security", ignoreCase = true) == true)
+                    "$cadangan Akun tidak punya izin mengubah klaim ini."
+                else
+                    "$cadangan (${e.message})"
             else -> "$cadangan Periksa koneksi lalu coba lagi."
         }
+    }
 }

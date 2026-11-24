@@ -44,8 +44,8 @@ class ClaimRemoteDataSource {
             id = s("id"),
             reportId = s("report_id").orEmpty(),
             claimantId = s("claimant_id"),
-            ciriKhusus = s("special_characteristics").orEmpty(),
-            description = s("description"),
+            ciriKhusus = s(KOLOM_CIRI).orEmpty(),
+            description = s(KOLOM_KETERANGAN),
             status = s("status"),
             createdAt = s("created_at"),
             reports = laporan?.let {
@@ -121,8 +121,8 @@ class ClaimRemoteDataSource {
         val payload = buildJsonObject {
             put("report_id", reportId)
             put("claimant_id", uid)
-            put("special_characteristics", ciriKhusus.trim())
-            if (!keterangan.isNullOrBlank()) put("description", keterangan.trim())
+            put(KOLOM_CIRI, ciriKhusus.trim())
+            put(KOLOM_KETERANGAN, keterangan?.trim()?.ifBlank { null })
         }
 
         return client.from("claims").insert(payload) {
@@ -173,8 +173,8 @@ class ClaimRemoteDataSource {
         pastikanBisaDiubah(lama.reportId)
 
         val payload = buildJsonObject {
-            put("special_characteristics", ciriKhusus.trim())
-            put("description", keterangan?.trim().orEmpty())
+            put(KOLOM_CIRI, ciriKhusus.trim())
+            put(KOLOM_KETERANGAN, keterangan?.trim()?.ifBlank { null })
         }
 
         return client.from("claims").update(payload) {
@@ -203,6 +203,10 @@ class ClaimRemoteDataSource {
 
     companion object {
         const val STATUS_SELESAI = "completed"
+
+        // Nama kolom di tabel claims (Supabase)
+        private const val KOLOM_CIRI = "special_characteristics"
+        private const val KOLOM_KETERANGAN = "supporting_description"
     }
 }
 

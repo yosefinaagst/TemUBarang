@@ -9,7 +9,7 @@ data class Claim(
     @SerialName("report_id") val reportId: String,
     @SerialName("claimant_id") val claimantId: String? = null,
     @SerialName("special_characteristics") val ciriKhusus: String,
-    val description: String? = null,
+    @SerialName("supporting_description") val description: String? = null,
     val status: String? = null,
     @SerialName("created_at") val createdAt: String? = null,
     val reports: LaporanDiklaim? = null      // terisi kalau di-join ke tabel reports
