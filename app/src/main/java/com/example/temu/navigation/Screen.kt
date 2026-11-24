@@ -12,6 +12,7 @@ object Screen {
     const val FORM_KLAIM = "form_klaim/{id}"
     const val KLAIM_SAYA = "klaim_saya"
     const val DETAIL_KLAIM = "detail_klaim/{id}"
+    const val PROFIL = "profil"
 
     fun detailTemuan(id: String) =
         "detail_temuan/$id"
