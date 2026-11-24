@@ -26,6 +26,8 @@ import com.example.temu.ui.screens.components.TAB_JELAJAH
 import com.example.temu.ui.screens.components.TAB_KLAIM_SAYA
 import com.example.temu.ui.screens.hilang.RuteHilang
 import com.example.temu.ui.screens.hilang.laporanHilangGraph
+import com.example.temu.ui.screens.laporansaya.RuteLaporanSaya
+import com.example.temu.ui.screens.laporansaya.laporanSayaGraph
 import com.example.temu.ui.screens.temuan.DetailTemuanRoute
 import com.example.temu.ui.screens.temuan.FormTemuanRoute
 import com.example.temu.ui.screens.temuan.HomeRoute
@@ -172,8 +174,16 @@ fun AppNavigation() {
         // ViewModel tiap layar F1 dibuat di dalam laporanHilangGraph (1 layar = 1 ViewModel)
         laporanHilangGraph(
             navController = navController,
-            ruteDitemukan = Screen.HOME
+            ruteDitemukan = Screen.HOME,
+            // Laporan milik sendiri → kelola di Laporan Saya (F1 Halaman 2)
+            onUbahStatus = { id -> navController.navigate(RuteLaporanSaya.detail(id)) },
+            onBukaLaporanSaya = {
+                navController.navigate(RuteLaporanSaya.daftar()) { launchSingleTop = true }
+            }
         )
+
+        // F1 HALAMAN 2 · LAPORAN SAYA (daftar per status, detail + riwayat, ubah status)
+        laporanSayaGraph(navController = navController)
 
         // FORM LAPORAN TEMUAN
         composable(Screen.FORM_TEMUAN) {

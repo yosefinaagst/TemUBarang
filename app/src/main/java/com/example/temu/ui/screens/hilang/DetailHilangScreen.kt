@@ -51,7 +51,7 @@ import com.example.temu.data.model.kategoriBarang
  * - Pemilik       : Edit laporan, Hapus laporan (+ Ubah status bila fitur Status Saya tersambung)
  *
  * Screen ini TIDAK memakai ViewModel: hanya menerima [state] dan aksi (lambda).
- * [onUbahStatus]    → layar Status Saya (anggota lain). Null = tombol disembunyikan.
+ * [onUbahStatus]    → Detail di Laporan Saya (F1 Halaman 2). Null = tombol disembunyikan.
  * [onSimpanLaporan] → Tersimpan (F4). Null = tombol disembunyikan.
  */
 @Composable
@@ -329,7 +329,7 @@ private fun IsiDetail(
                     modifier = Modifier.fillMaxWidth(),
                     shape = BentukHilang.Tombol
                 ) {
-                    Text("Ubah status", color = WarnaHilang.Rose)
+                    Text("Kelola di Laporan Saya", color = WarnaHilang.Rose)
                 }
             }
         } else if (onSimpanLaporan != null) {

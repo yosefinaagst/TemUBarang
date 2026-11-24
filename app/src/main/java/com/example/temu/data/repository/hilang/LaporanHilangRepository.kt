@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 
 /** Jenis perubahan data laporan hilang yang perlu diketahui layar lain. */
 data class PerubahanHilang(val jenis: Jenis, val id: String) {
-    enum class Jenis { TERBIT, EDIT, HAPUS }
+    enum class Jenis { TERBIT, EDIT, HAPUS, STATUS }
 }
 
 /**
