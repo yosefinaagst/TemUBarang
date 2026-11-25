@@ -37,6 +37,7 @@ import com.example.temu.ui.screens.components.NavigasiBawah
 import com.example.temu.ui.screens.components.TAB_JELAJAH
 import com.example.temu.ui.screens.components.TAB_KLAIM_SAYA
 import com.example.temu.ui.screens.components.TAB_PROFIL
+import com.example.temu.ui.screens.components.TAB_TERSIMPAN
 import kotlinx.coroutines.CancellationException
 
 private val paper = Color(0xFFFCF8F7)
@@ -74,6 +75,7 @@ fun HomeScreen(
     onHilangClick: () -> Unit = {},
     onKlaimSayaClick: () -> Unit = {},
     onProfilClick: () -> Unit = {},
+    onTersimpanClick: () -> Unit = {},
     fotoProfil: String? = null,
     inisialProfil: String? = null,
 ) {
@@ -315,6 +317,7 @@ fun HomeScreen(
                     when (tab) {
                         TAB_KLAIM_SAYA -> onKlaimSayaClick()
                         TAB_PROFIL -> onProfilClick()
+                        TAB_TERSIMPAN -> onTersimpanClick()
                     }
                 }
             )
