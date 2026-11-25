@@ -19,12 +19,15 @@ import com.example.temu.ui.screens.components.NavigasiBawah
 import com.example.temu.ui.screens.components.TAB_JELAJAH
 import com.example.temu.ui.screens.components.TAB_KLAIM_SAYA
 import com.example.temu.ui.screens.components.TAB_PROFIL
+import com.example.temu.ui.screens.components.TAB_TERSIMPAN
 import com.example.temu.ui.screens.hilang.RuteHilang
 import com.example.temu.ui.screens.hilang.laporanHilangGraph
 import com.example.temu.ui.screens.profil.ProfilScreen
 import com.example.temu.ui.screens.temuan.DetailTemuanRoute
 import com.example.temu.ui.screens.temuan.FormTemuanRoute
 import com.example.temu.ui.screens.temuan.HomeRoute
+import com.example.temu.ui.screens.tersimpan.RuteTersimpan
+import com.example.temu.ui.screens.tersimpan.laporanTersimpanGraph
 import com.example.temu.viewmodel.AuthViewModel
 import com.example.temu.viewmodel.TemuanViewModel
 import kotlinx.coroutines.delay
@@ -47,7 +50,8 @@ fun AppNavigation() {
             TAB_JELAJAH -> Screen.HOME
             TAB_KLAIM_SAYA -> Screen.KLAIM_SAYA
             TAB_PROFIL -> Screen.PROFIL
-            else -> null // Tersimpan & Status Saya belum dibuat
+            TAB_TERSIMPAN -> RuteTersimpan.DAFTAR // F4
+            else -> null // Status Saya belum dibuat
         }
         if (tujuan != null) {
             navController.navigate(tujuan) {
@@ -177,6 +181,11 @@ fun AppNavigation() {
                 // Profil: tab Profil di navbar / ikon orang di kanan atas
                 onProfilClick = {
                     pindahTab(TAB_PROFIL)
+                },
+
+                // F4: tab Tersimpan
+                onTersimpanClick = {
+                    pindahTab(TAB_TERSIMPAN)
                 }
             )
         }
@@ -185,7 +194,18 @@ fun AppNavigation() {
         // ViewModel tiap layar F1 dibuat di dalam laporanHilangGraph (1 layar = 1 ViewModel)
         laporanHilangGraph(
             navController = navController,
-            ruteDitemukan = Screen.HOME
+            ruteDitemukan = Screen.HOME,
+            // F4: tombol "Simpan" di Detail laporan hilang → simpan lalu buka Detail Tersimpan
+            onSimpanLaporan = { id ->
+                navController.navigate(RuteTersimpan.detail(id, simpan = true))
+            },
+            onNavigasiBawah = pindahTab
+        )
+
+        // F4 LAPORAN TERSIMPAN (daftar, pilih laporan, detail)
+        laporanTersimpanGraph(
+            navController = navController,
+            onNavigasiBawah = pindahTab
         )
 
         // FORM LAPORAN TEMUAN
