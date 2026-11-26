@@ -32,10 +32,13 @@ import coil.compose.AsyncImage
 import com.example.temu.R
 import com.example.temu.data.model.Temuan
 import com.example.temu.data.model.kategoriBarang
+import com.example.temu.ui.screens.components.AvatarProfil
 import com.example.temu.ui.screens.components.NavigasiBawah
 import com.example.temu.ui.screens.components.TAB_JELAJAH
 import com.example.temu.ui.screens.components.TAB_KLAIM_SAYA
+import com.example.temu.ui.screens.components.TAB_PROFIL
 import com.example.temu.ui.screens.components.TAB_STATUS_SAYA
+import com.example.temu.ui.screens.components.TAB_TERSIMPAN
 import kotlinx.coroutines.CancellationException
 
 private val paper = Color(0xFFFCF8F7)
@@ -72,7 +75,11 @@ fun HomeScreen(
     getPhotoUrl: suspend (String) -> String,
     onHilangClick: () -> Unit = {},
     onKlaimSayaClick: () -> Unit = {},
-    onStatusSayaClick: () -> Unit = {}
+    onProfilClick: () -> Unit = {},
+    onTersimpanClick: () -> Unit = {},
+    onStatusSayaClick: () -> Unit = {},
+    fotoProfil: String? = null,
+    inisialProfil: String? = null,
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     var category by rememberSaveable { mutableStateOf("") }
@@ -119,7 +126,7 @@ fun HomeScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text("Halo!", color = muted)
+                                Text("Halo! Apa kabar hari ini?", color = muted)
 
                                 Box(
                                     modifier = Modifier
@@ -127,10 +134,10 @@ fun HomeScreen(
                                         .background(blush, CircleShape),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    Glyph(
-                                        R.drawable.home_profil,
-                                        label = "Profil",
-                                        color = berry
+                                    AvatarProfil(
+                                        fotoUrl = fotoProfil,
+                                        inisial = inisialProfil,
+                                        onClick = onProfilClick
                                     )
                                 }
                             }
@@ -311,8 +318,9 @@ fun HomeScreen(
                 onPilih = { tab ->
                     when (tab) {
                         TAB_KLAIM_SAYA -> onKlaimSayaClick()
+                        TAB_PROFIL -> onProfilClick()
+                        TAB_TERSIMPAN -> onTersimpanClick()
                         TAB_STATUS_SAYA -> onStatusSayaClick() // F1 Halaman 2 · Laporan Saya
-                        // Tersimpan, Profil: belum ada halaman
                     }
                 }
             )

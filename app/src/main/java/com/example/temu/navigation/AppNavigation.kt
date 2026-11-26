@@ -1,13 +1,7 @@
 package com.example.temu.navigation
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -24,16 +18,19 @@ import com.example.temu.ui.screens.claim.KlaimSayaScreen
 import com.example.temu.ui.screens.components.NavigasiBawah
 import com.example.temu.ui.screens.components.TAB_JELAJAH
 import com.example.temu.ui.screens.components.TAB_KLAIM_SAYA
+import com.example.temu.ui.screens.components.TAB_PROFIL
 import com.example.temu.ui.screens.components.TAB_STATUS_SAYA
+import com.example.temu.ui.screens.components.TAB_TERSIMPAN
 import com.example.temu.ui.screens.hilang.RuteHilang
 import com.example.temu.ui.screens.hilang.laporanHilangGraph
 import com.example.temu.ui.screens.laporansaya.RuteLaporanSaya
 import com.example.temu.ui.screens.laporansaya.laporanSayaGraph
+import com.example.temu.ui.screens.profil.ProfilScreen
 import com.example.temu.ui.screens.temuan.DetailTemuanRoute
 import com.example.temu.ui.screens.temuan.FormTemuanRoute
 import com.example.temu.ui.screens.temuan.HomeRoute
-import com.example.temu.ui.theme.TextPrimary
-import com.example.temu.ui.theme.WarmWhite
+import com.example.temu.ui.screens.tersimpan.RuteTersimpan
+import com.example.temu.ui.screens.tersimpan.laporanTersimpanGraph
 import com.example.temu.viewmodel.AuthViewModel
 import com.example.temu.viewmodel.TemuanViewModel
 import kotlinx.coroutines.delay
@@ -48,6 +45,25 @@ fun AppNavigation() {
     // ViewModel laporan temuan
     // Instance yang sama digunakan oleh Home dan Form
     val temuanViewModel: TemuanViewModel = viewModel()
+
+    // Pindah antar-tab bottom nav. Home jadi dasar back stack,
+    // jadi Back dari tab mana pun kembali ke Jelajah.
+    val pindahTab: (Int) -> Unit = { tab ->
+        val tujuan = when (tab) {
+            TAB_JELAJAH -> Screen.HOME
+            TAB_KLAIM_SAYA -> Screen.KLAIM_SAYA
+            TAB_PROFIL -> Screen.PROFIL
+            TAB_TERSIMPAN -> RuteTersimpan.DAFTAR // F4
+            TAB_STATUS_SAYA -> RuteLaporanSaya.daftar() // F1 Halaman 2 · Laporan Saya
+            else -> null
+        }
+        if (tujuan != null) {
+            navController.navigate(tujuan) {
+                popUpTo(Screen.HOME)
+                launchSingleTop = true
+            }
+        }
+    }
 
     NavHost(
         navController = navController,
@@ -163,18 +179,22 @@ fun AppNavigation() {
 
                 // F2: pindah ke tab Klaim Saya
                 onKlaimSayaClick = {
-                    navController.navigate(Screen.KLAIM_SAYA) {
-                        popUpTo(Screen.HOME)
-                        launchSingleTop = true
-                    }
+                    pindahTab(TAB_KLAIM_SAYA)
                 },
 
-                // F1 Halaman 2: pindah ke tab Status Saya (Laporan Saya)
+                // Profil: tab Profil di navbar / ikon orang di kanan atas
+                onProfilClick = {
+                    pindahTab(TAB_PROFIL)
+                },
+
+                // F4: tab Tersimpan
+                onTersimpanClick = {
+                    pindahTab(TAB_TERSIMPAN)
+                },
+
+                // F1 Halaman 2: tab Status Saya (Laporan Saya)
                 onStatusSayaClick = {
-                    navController.navigate(RuteLaporanSaya.daftar()) {
-                        popUpTo(Screen.HOME)
-                        launchSingleTop = true
-                    }
+                    pindahTab(TAB_STATUS_SAYA)
                 }
             )
         }
@@ -184,21 +204,25 @@ fun AppNavigation() {
         laporanHilangGraph(
             navController = navController,
             ruteDitemukan = Screen.HOME,
-            // Laporan milik sendiri → kelola di Laporan Saya (F1 Halaman 2)
+            // F1 Halaman 2: laporan milik sendiri → kelola di Laporan Saya
             onUbahStatus = { id -> navController.navigate(RuteLaporanSaya.detail(id)) },
-            onBukaLaporanSaya = {
-                navController.navigate(RuteLaporanSaya.daftar()) {
-                    popUpTo(Screen.HOME)
-                    launchSingleTop = true
-                }
-            }
+            // F4: tombol "Simpan" di Detail laporan hilang → simpan lalu buka Detail Tersimpan
+            onSimpanLaporan = { id ->
+                navController.navigate(RuteTersimpan.detail(id, simpan = true))
+            },
+            onNavigasiBawah = pindahTab
+        )
+
+        // F4 LAPORAN TERSIMPAN (daftar, pilih laporan, detail)
+        laporanTersimpanGraph(
+            navController = navController,
+            onNavigasiBawah = pindahTab
         )
 
         // F1 HALAMAN 2 · LAPORAN SAYA (daftar per status, detail + riwayat, ubah status)
         laporanSayaGraph(
             navController = navController,
-            ruteJelajah = Screen.HOME,
-            ruteKlaimSaya = Screen.KLAIM_SAYA
+            onNavigasiBawah = pindahTab
         )
 
         // FORM LAPORAN TEMUAN
@@ -297,20 +321,7 @@ fun AppNavigation() {
                     NavigasiBawah(
                         terpilih = TAB_KLAIM_SAYA,
                         tambahInsetBawah = true,
-                        onPilih = { tab ->
-                            if (tab == TAB_JELAJAH) {
-                                navController.navigate(Screen.HOME) {
-                                    popUpTo(Screen.HOME)
-                                    launchSingleTop = true
-                                }
-                            }
-                            if (tab == TAB_STATUS_SAYA) {
-                                navController.navigate(RuteLaporanSaya.daftar()) {
-                                    popUpTo(Screen.HOME)
-                                    launchSingleTop = true
-                                }
-                            }
-                        }
+                        onPilih = pindahTab
                     )
                 }
             )
@@ -351,6 +362,27 @@ fun AppNavigation() {
                     navController.navigate(Screen.KLAIM_SAYA) {
                         popUpTo(Screen.HOME)
                     }
+                }
+            )
+        }
+
+        // PROFIL (tab di bottom nav) · lihat, edit, keluar
+        composable(Screen.PROFIL) {
+            ProfilScreen(
+                onKeluar = {
+                    // Reset status login agar layar Login tidak langsung lompat ke Home
+                    authViewModel.resetStatus()
+                    navController.navigate(Screen.LOGIN) {
+                        // Hapus seluruh back stack: Back dari Login tidak kembali ke app
+                        popUpTo(navController.graph.id) { inclusive = true }
+                    }
+                },
+                bottomBar = {
+                    NavigasiBawah(
+                        terpilih = TAB_PROFIL,
+                        tambahInsetBawah = true,
+                        onPilih = pindahTab
+                    )
                 }
             )
         }

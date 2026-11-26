@@ -39,14 +39,14 @@ object RuteHilang {
  * @param ruteDitemukan   route layar Jelajah · Ditemukan (F3) untuk tombol Hilang|Ditemukan.
  * @param onUbahStatus    buka layar Status Saya untuk laporan ini (null = tombol disembunyikan).
  * @param onSimpanLaporan simpan ke Tersimpan / F4 (null = tombol disembunyikan).
- * @param onBukaLaporanSaya buka F1 Halaman 2 dari navigasi bawah (menu "Laporan Saya").
+ * @param onNavigasiBawah tab navigasi bawah yang diketuk di Jelajah · Hilang (index tab).
  */
 fun NavGraphBuilder.laporanHilangGraph(
     navController: NavHostController,
     ruteDitemukan: String,
     onUbahStatus: ((String) -> Unit)? = null,
     onSimpanLaporan: ((String) -> Unit)? = null,
-    onBukaLaporanSaya: (() -> Unit)? = null
+    onNavigasiBawah: (Int) -> Unit = {}
 ) {
     // ---------------- Jelajah · Hilang ----------------
     composable(RuteHilang.JELAJAH) {
@@ -70,7 +70,7 @@ fun NavGraphBuilder.laporanHilangGraph(
             },
             onTambah = { navController.navigate(RuteHilang.TAMBAH) },
             onDetail = { id -> navController.navigate(RuteHilang.detail(id)) },
-            onNavigasiBawah = { index -> if (index == 3) onBukaLaporanSaya?.invoke() }
+            onNavigasiBawah = onNavigasiBawah
         )
     }
 
