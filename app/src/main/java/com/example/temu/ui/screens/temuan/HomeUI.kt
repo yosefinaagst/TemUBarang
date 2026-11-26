@@ -37,6 +37,7 @@ import com.example.temu.ui.screens.components.NavigasiBawah
 import com.example.temu.ui.screens.components.TAB_JELAJAH
 import com.example.temu.ui.screens.components.TAB_KLAIM_SAYA
 import com.example.temu.ui.screens.components.TAB_PROFIL
+import com.example.temu.ui.screens.components.TAB_STATUS_SAYA
 import com.example.temu.ui.screens.components.TAB_TERSIMPAN
 import kotlinx.coroutines.CancellationException
 
@@ -76,6 +77,7 @@ fun HomeScreen(
     onKlaimSayaClick: () -> Unit = {},
     onProfilClick: () -> Unit = {},
     onTersimpanClick: () -> Unit = {},
+    onStatusSayaClick: () -> Unit = {},
     fotoProfil: String? = null,
     inisialProfil: String? = null,
 ) {
@@ -318,6 +320,7 @@ fun HomeScreen(
                         TAB_KLAIM_SAYA -> onKlaimSayaClick()
                         TAB_PROFIL -> onProfilClick()
                         TAB_TERSIMPAN -> onTersimpanClick()
+                        TAB_STATUS_SAYA -> onStatusSayaClick() // F1 Halaman 2 · Laporan Saya
                     }
                 }
             )

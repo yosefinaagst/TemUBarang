@@ -19,9 +19,12 @@ import com.example.temu.ui.screens.components.NavigasiBawah
 import com.example.temu.ui.screens.components.TAB_JELAJAH
 import com.example.temu.ui.screens.components.TAB_KLAIM_SAYA
 import com.example.temu.ui.screens.components.TAB_PROFIL
+import com.example.temu.ui.screens.components.TAB_STATUS_SAYA
 import com.example.temu.ui.screens.components.TAB_TERSIMPAN
 import com.example.temu.ui.screens.hilang.RuteHilang
 import com.example.temu.ui.screens.hilang.laporanHilangGraph
+import com.example.temu.ui.screens.laporansaya.RuteLaporanSaya
+import com.example.temu.ui.screens.laporansaya.laporanSayaGraph
 import com.example.temu.ui.screens.profil.ProfilScreen
 import com.example.temu.ui.screens.temuan.DetailTemuanRoute
 import com.example.temu.ui.screens.temuan.FormTemuanRoute
@@ -51,7 +54,8 @@ fun AppNavigation() {
             TAB_KLAIM_SAYA -> Screen.KLAIM_SAYA
             TAB_PROFIL -> Screen.PROFIL
             TAB_TERSIMPAN -> RuteTersimpan.DAFTAR // F4
-            else -> null // Status Saya belum dibuat
+            TAB_STATUS_SAYA -> RuteLaporanSaya.daftar() // F1 Halaman 2 · Laporan Saya
+            else -> null
         }
         if (tujuan != null) {
             navController.navigate(tujuan) {
@@ -186,6 +190,11 @@ fun AppNavigation() {
                 // F4: tab Tersimpan
                 onTersimpanClick = {
                     pindahTab(TAB_TERSIMPAN)
+                },
+
+                // F1 Halaman 2: tab Status Saya (Laporan Saya)
+                onStatusSayaClick = {
+                    pindahTab(TAB_STATUS_SAYA)
                 }
             )
         }
@@ -195,6 +204,8 @@ fun AppNavigation() {
         laporanHilangGraph(
             navController = navController,
             ruteDitemukan = Screen.HOME,
+            // F1 Halaman 2: laporan milik sendiri → kelola di Laporan Saya
+            onUbahStatus = { id -> navController.navigate(RuteLaporanSaya.detail(id)) },
             // F4: tombol "Simpan" di Detail laporan hilang → simpan lalu buka Detail Tersimpan
             onSimpanLaporan = { id ->
                 navController.navigate(RuteTersimpan.detail(id, simpan = true))
@@ -204,6 +215,12 @@ fun AppNavigation() {
 
         // F4 LAPORAN TERSIMPAN (daftar, pilih laporan, detail)
         laporanTersimpanGraph(
+            navController = navController,
+            onNavigasiBawah = pindahTab
+        )
+
+        // F1 HALAMAN 2 · LAPORAN SAYA (daftar per status, detail + riwayat, ubah status)
+        laporanSayaGraph(
             navController = navController,
             onNavigasiBawah = pindahTab
         )

@@ -17,6 +17,7 @@ fun HomeRoute(
     onKlaimSayaClick: () -> Unit = {},
     onProfilClick: () -> Unit = {},
     onTersimpanClick: () -> Unit = {},
+    onStatusSayaClick: () -> Unit = {},
 
     profilViewModel: ProfilViewModel = viewModel(),
 ) {
@@ -61,6 +62,8 @@ fun HomeRoute(
         onProfilClick = onProfilClick,
 
         onTersimpanClick = onTersimpanClick,
+
+        onStatusSayaClick = onStatusSayaClick,
 
         fotoProfil = profilState.profil?.fotoUrl,
 
